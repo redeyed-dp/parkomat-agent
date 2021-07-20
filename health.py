@@ -50,7 +50,7 @@ class Health():
             for s in df:
                 disk = re.split(r' +', s.strip())
                 if disk[5] == '/':
-                    return disk[4].replace('%', '')
+                    return int(disk[4].replace('%', ''))
             return False
         except:
             # Root partition must be always mounted.
@@ -85,6 +85,12 @@ class Health():
         except:
             return 'down'
 
+    def uptime(self):
+        f = open('/proc/uptime', 'r')
+        uptime = f.readline().split(' ')[0].split('.')[0]
+        f.close()
+        return int(uptime)
+
     def all(self):
         self.log.clear()
         stat = dict()
@@ -93,6 +99,7 @@ class Health():
         if stat['hdd']:
             stat['internet'] = self.ping('8.8.8.8')
             stat['vpn'] = self.ping('10.0.0.1')
+            stat['uptime'] = self.uptime()
             stat['usb'] = self.usb()
             stat['cpu'] = self.cpu()
             stat['ram'] = self.ram()
@@ -102,6 +109,6 @@ class Health():
             print('{} WARNING!!! HDD disconnected!'.format(stat['time']))
             # Ping not works without HDD. Just try to send alarm to server.
             stat['internet'] = 0
-            for param in ('vpn', 'usb', 'cpu', 'ram', 'api', 'log'):
+            for param in ('vpn', 'usb', 'uptime', 'cpu', 'ram', 'api', 'log'):
                 stat[param] = False
         return stat

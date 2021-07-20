@@ -2,16 +2,15 @@ from health import Health
 from models import db, HealthCache
 from time import sleep
 from os import uname
-import json
 import requests
 
 def sendToServer(data, host):
     data['host'] = host
     data['time'] = str(data['time'])
     try:
-#        print(json.dumps(data))
-#        r = requests.post(url='https://api-parking.icity.com.ua/api/v1/log/', json=json.dumps(data))
-        r = requests.post(url='http://116.203.249.22:8888/', json=json.dumps(data))
+#        print(data)
+#        r = requests.post(url='https://api-parking.icity.com.ua/api/v1/log/', json=data)
+        r = requests.post(url='http://116.203.249.22:8888/', json=data)
 #        print("raise: {}".format(r.raise_for_status()))
 #        print("status: {}".format(r.status_code))
         return True
@@ -36,7 +35,7 @@ def monitoring():
                 print("Old probes found in cache. Trying to send.")
                 for probe in HealthCache.select().order_by(HealthCache.time):
                     old = dict()
-                    for param in ('time', 'internet', 'vpn', 'usb', 'cpu', 'ram', 'hdd', 'api', 'log'):
+                    for param in ('time', 'internet', 'vpn', 'uptime','usb', 'cpu', 'ram', 'hdd', 'api', 'log'):
                         old[param] = getattr(probe, param)
                     if sendToServer(data=old, host=host):
                         probe.delete_instance()

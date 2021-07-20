@@ -6,6 +6,7 @@ class HealthCache(Model):
     time = DateTimeField()
     internet = IntegerField()
     vpn = IntegerField()
+    uptime = IntegerField()
     usb = CharField()
     cpu = IntegerField()
     ram = IntegerField()
