@@ -9,7 +9,9 @@ def sendToServer(data, host):
     data['time'] = str(data['time'])
     try:
 #        print(data)
+        # It works with HDD only :-(
 #        r = requests.post(url='https://api-parking.icity.com.ua/api/v1/log/', json=data)
+        # It works without HDD! SSL certificate and DNS not required.
         r = requests.post(url='http://116.203.249.22:8888/', json=data)
 #        print("raise: {}".format(r.raise_for_status()))
 #        print("status: {}".format(r.status_code))
@@ -18,8 +20,6 @@ def sendToServer(data, host):
         return False
 
 def monitoring():
-    # Define hostname once. Are this function works while SSD disconnected?
-    host = uname().nodename
     db.connect()
     try:
         HealthCache.notEmpty()
@@ -37,18 +37,18 @@ def monitoring():
                     old = dict()
                     for param in ('time', 'internet', 'vpn', 'uptime','usb', 'cpu', 'ram', 'hdd', 'api', 'log'):
                         old[param] = getattr(probe, param)
-                    if sendToServer(data=old, host=host):
+                    if sendToServer(data=old, host=health.host):
                         probe.delete_instance()
         except:
             pass
 
-        sendToServer(data=stat, host=host)
+        sendToServer(data=stat, host=health.host)
         # Save to cache if packet loss in main channel greater than 0%
         if stat.get('internet') == 100:
             try:
                 probe = HealthCache.create(time=stat['time'], internet=stat['internet'], vpn=stat['vpn'],
-                                           usb=stat['usb'], cpu=stat['cpu'], ram=stat['ram'], hdd=stat['hdd'],
-                                           api=stat['api'], log=stat['log'])
+                                           uptime=stat['uptime'], usb=stat['usb'], cpu=stat['cpu'], ram=stat['ram'],
+                                           hdd=stat['hdd'], api=stat['api'], log=stat['log'])
                 probe.save()
             except:
                 pass

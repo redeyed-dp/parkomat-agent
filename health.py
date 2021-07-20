@@ -1,11 +1,19 @@
 import os
 import re
 from datetime import datetime
+from os import uname
 import requests
 
 
 class Health():
     log = []
+
+    def __init__(self):
+        # armv7l - AP
+        # x86_64 - ReSEA
+        self.arc = uname().machine
+        self.host = uname().nodename
+
     # Return packet loss in percents
     def ping(self, ip):
         try:
@@ -21,7 +29,8 @@ class Health():
 # 1a86:7523 - CH341 USB-COM adapter. Assembled at left side of mainboard.
 # 0403:6001 - FTDI USB-COM adapter. Assembled at right side of mainboard.
 # 10c4:ea60 - CP210x USB-COM adapter. Integrated to Maria.
-# 0dd4:015d - USB-LP. Software printer.
+# 0dd4:015d - Software printer on AP.
+# 0dd4:01a8 - Software printer on SEA
     def usb(self):
         device = {'validator': False, 'coin': False, 'printer': False}
         try:
@@ -32,9 +41,9 @@ class Health():
                     device['coin'] = True
                 if id == '0403:6001':
                     device['validator'] = True
-                if id == '10c4:ea60' or id == '0dd4:015d':
+                if id == '10c4:ea60' or id == '0dd4:015d' or id == '0dd4:01a8':
                     device['printer'] = True
-            if not device['validator'] or not device['coin'] or not device['printer']:
+            if self.arc == 'armv7l' and ( not device['validator'] or not device['coin']) or not device['printer']:
                 dmesg = os.popen("dmesg")
                 for s in dmesg:
                     if s.split(' ')[1] == 'usb':
