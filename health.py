@@ -7,6 +7,7 @@ import requests
 
 class Health():
     log = []
+    journalctl = []
 
     def __init__(self):
         # armv7l - AP
@@ -31,8 +32,9 @@ class Health():
 # 10c4:ea60 - CP210x USB-COM adapter. Integrated to Maria.
 # 0dd4:015d - Software printer on AP.
 # 0dd4:01a8 - Software printer on SEA
+# fff0:0100 - Exellio NFC
     def usb(self):
-        device = {'validator': False, 'coin': False, 'printer': False}
+        device = {'validator': False, 'coin': False, 'printer': False, 'nfc': False}
         try:
             lsusb = os.popen("lsusb")
             for s in lsusb:
@@ -43,6 +45,8 @@ class Health():
                     device['validator'] = True
                 if id == '10c4:ea60' or id == '0dd4:015d' or id == '0dd4:01a8':
                     device['printer'] = True
+                if id == 'fff0:0100':
+                    device['nfc'] = True
             if self.arc == 'armv7l' and ( not device['validator'] or not device['coin']) or not device['printer']:
                 dmesg = os.popen("dmesg")
                 for s in dmesg:
@@ -100,6 +104,17 @@ class Health():
         f.close()
         return int(uptime)
 
+    def journal(self):
+        try:
+            f = os.popen("journalctl -u parkomat")
+            current = f.readlines()
+            if current != self.journalctl:
+                self.journalctl = current
+                return current
+            return []
+        except:
+            return []
+
     def all(self):
         self.log.clear()
         stat = dict()
@@ -114,10 +129,11 @@ class Health():
             stat['ram'] = self.ram()
             stat['api'] = self.api()
             stat['log'] = self.log
+            stat['journal'] = self.journal()
         else:
             print('{} WARNING!!! HDD disconnected!'.format(stat['time']))
             # Ping not works without HDD. Just try to send alarm to server.
             stat['internet'] = 0
-            for param in ('vpn', 'usb', 'uptime', 'cpu', 'ram', 'api', 'log'):
+            for param in ('vpn', 'usb', 'uptime', 'cpu', 'ram', 'api', 'log', 'journal'):
                 stat[param] = False
         return stat
