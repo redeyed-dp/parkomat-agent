@@ -108,7 +108,7 @@ class Health():
         try:
             f = os.popen("journalctl -u parkomat")
             current = f.readlines()
-            if current != self.journalctl:
+            if len(current) != len(self.journalctl):
                 self.journalctl = current
                 return current
             return []
