@@ -1,0 +1,13 @@
+[Unit]
+Description=monitoring
+After=network.target
+
+[Service]
+Type=idle
+Restart=always
+RestartSec=5
+WorkingDirectory=/opt/monitoring
+ExecStart=/usr/bin/screen -DmS monitoring /usr/bin/python3 /opt/monitoring/main.py
+
+[Install]
+WantedBy=multi-user.target
