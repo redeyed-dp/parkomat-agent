@@ -52,9 +52,9 @@ class Health():
                 for s in dmesg:
                     if s.split(' ')[1] == 'usb':
                         self.log.append(s)
-            return device
         except:
-            return False
+            pass
+        return device
 
     # Return usage of disk space in percents
     def hdd(self):
