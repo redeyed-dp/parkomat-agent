@@ -8,11 +8,12 @@ def sendToServer(data, host):
     data['host'] = host
     data['time'] = str(data['time'])
     try:
-#        print(data)
-        # It works with HDD only :-(
+# It works with HDD only :-(
 #        r = requests.post(url='https://api-parking.icity.com.ua/api/v1/log/', json=data)
-        # It works without HDD! SSL certificate and DNS not required.
-        r = requests.post(url='http://116.203.249.22:8888/', json=data)
+# It works without HDD! SSL certificate and DNS not required.
+#        r = requests.post(url='http://116.203.249.22:8888/', json=data)
+# New server for monitoring only
+        r = requests.post(url='http://116.203.249.22:8080/health/api', json=data)
 #        print("raise: {}".format(r.raise_for_status()))
 #        print("status: {}".format(r.status_code))
         return True
