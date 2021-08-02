@@ -6,8 +6,8 @@ After=network.target
 Type=idle
 Restart=always
 RestartSec=5
-WorkingDirectory=/opt/monitoring
-ExecStart=/usr/bin/screen -DmS monitoring /usr/bin/python3 /opt/monitoring/main.py
+WorkingDirectory=/opt/parkomat-agent
+ExecStart=/usr/bin/screen -DmS parkomat-agent /usr/bin/python3 /opt/parkomat-agent/main.py
 
 [Install]
 WantedBy=multi-user.target
