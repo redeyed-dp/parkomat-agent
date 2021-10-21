@@ -91,9 +91,9 @@ class Health():
 
     def api(self):
         try:
-            r = requests.get('http://127.0.0.1:12345/api/v1/is_blocked/')
-            if r.json().get('data', False):
-                return r.json().get('message', 'unknown')
+            r = requests.get('http://127.0.0.1:12345/api/v2/is-blocked/')
+            if r.json().get('blocked', False):
+                return r.json().get('reason', 'unknown')
             return 'ok'
         except:
             return 'down'
