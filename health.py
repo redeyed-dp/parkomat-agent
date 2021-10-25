@@ -18,7 +18,7 @@ class Health():
     # Return packet loss in percents
     def ping(self, ip):
         try:
-            ping = os.popen("ping -nc 4 {}".format(ip))
+            ping = os.popen(f"ping -nc 4 -s 1400 {ip}")
             for s in ping:
                 stat = re.search(r'\d{1,3}% packet loss', s)
                 if stat:
@@ -131,7 +131,7 @@ class Health():
             stat['log'] = self.log
             stat['journal'] = self.journal()
         else:
-            print('{} WARNING!!! HDD disconnected!'.format(stat['time']))
+            print(f"{stat['time']} WARNING!!! HDD disconnected!")
             # Ping not works without HDD. Just try to send alarm to server.
             stat['internet'] = 0
             for param in ('vpn', 'usb', 'uptime', 'cpu', 'ram', 'api', 'log', 'journal'):
